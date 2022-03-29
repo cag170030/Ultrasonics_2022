@@ -14,6 +14,8 @@ Original paper by Terzi et al.: [Generation of a Vortex Ultrasonic Beam with a P
 
 Sam Parker's M.S. thesis: [Physical limitations and practical considerations for the creation of acoustic holograms](https://hdl.handle.net/2152/87049)
 
+[Acoustic holography as a metrological tool for characterizing medical ultrasound sources and fields](https://doi.org/10.1121/1.4928396)
+
 [Holographic mirrors for spatial ultrasound modulation in contactless acoustic energy transfer systems](https://aip.scitation.org/doi/10.1063/5.0065489)
 
 [Holograms for acoustics](https://www.nature.com/articles/nature19755)
