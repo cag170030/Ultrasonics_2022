@@ -11,6 +11,7 @@ Please remember to add any articles that you refer to in Overleaf using the \end
 
 ### Acoustic Holography
 [Holographic mirrors for spatial ultrasound modulation in contactless acoustic energy transfer systems](https://aip.scitation.org/doi/10.1063/5.0065489)
+
 [Holograms for acoustics](https://www.nature.com/articles/nature19755)
 
 ### Others...
