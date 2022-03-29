@@ -14,6 +14,8 @@ Please remember to add any articles that you refer to in Overleaf using the \end
 
 [Holograms for acoustics](https://www.nature.com/articles/nature19755)
 
+[Physical limitations and practical considerations for the creation of acoustic holograms](https://hdl.handle.net/2152/87049)
+
 ### Others...
 
 
