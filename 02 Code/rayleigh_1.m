@@ -1,7 +1,7 @@
 clear all vars
 clc
 close all force
-%% This script is meant to simulate acoustics wave from a baffled piston incident on a phase plate.
+%% This script is meant to simulate acoustics wave from a baffled piston incident on a phase plate. To run this code you will need 'waitbar_show.m'
 W_bar = waitbar(0,'Please wait...');
 
 %% Part (a) define a geometry and mesh the geometry to perform Rayleigh intergral...
