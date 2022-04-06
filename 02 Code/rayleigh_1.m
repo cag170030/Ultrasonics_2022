@@ -1,6 +1,6 @@
 clear all vars
 clc
-close all
+close all force
 %% This script is meant to simulate acoustics wave from a baffled piston incident on a phase plate.
 W_bar = waitbar(0,'Please wait...');
 
