@@ -15,7 +15,7 @@ P_piston=zeros(M_size,M_size);%Initialize the coordinate mesh on the surface of 
 Count=0;
 for i=1:length(P_piston(:,1))%Index Y
     for j=1:length(P_piston(1,:))%Index X
-        if ((i-(length(P_piston(:,1))+1)/2)^2+(j-(length(P_piston(:,1))+1)/2)^2)<=(length(P_piston(:,1))/2)^2
+        if ((i-(length(P_piston(:,1))+1)/2)^2+(j-(length(P_piston(:,1))+1)/2)^2)<=(length(P_piston(:,1))/2)^2% Draw a circle on the square matrix
             P_piston(i,j)=1;
             Count=Count+1;
         end
@@ -23,6 +23,42 @@ for i=1:length(P_piston(:,1))%Index Y
 end
 imshow(P_piston)% show an imag of the piston
 S_piston=P_piston*pi*a^2/Count; %Assigna each mesh square with an area
-
+D_P=10e-2;%Radius of the phase plate
+L=20e-2;%Distance between the piston and the phase plate
+P_size=501;%Number of partition points along the entire line
+Plate_P=zeros(P_size,P_size);%Innitialize the pressure pattern
+Count=0;
+rho=1.2;%Density in air
+for i=1:length(Plate_P(:,1))%Index Y
+    for j=1:length(Plate_P(1,:))%Index X
+        Sum=0;
+        if ((i-(length(Plate_P(:,1))+1)/2)^2+(j-(length(Plate_P(:,1))+1)/2)^2)<=(length(Plate_P(:,1))/2)^2%Draw a circle on the square matrix
+            for k=1:length(P_piston(:,1))
+                for l=1:length(P_piston(1,:))
+                    if P_piston(k,l)~=0
+                        Position_pistonY=(length(P_piston(:,1))/2)-k;%Positon in number of squares not converted to actual distance
+                        Position_pistonX=-1*((length(P_piston(1,:))/2)-k);%Positon in number of squares not converted to actual distance
+                        Position_PlateY=(length(Plate_P(:,1))/2)-i;%Positon in number of squares not converted to actual distance
+                        Position_PlateX=-1*((length(Plate_P(1,:))/2)-j);%Positon in number of squares not converted to actual distance
+                        Position_pistonY=Position_pistonY*a/(length(P_piston(:,1))/2);%Covert to Real Y coordinate of the point
+                        Position_pistonX=Position_pistonX*a/(length(P_piston(:,1))/2);%Covert to Real X coordinate of the point
+                        Position_PlateY=Position_PlateY*D_P/(length(Plate_P(:,1))/2);%Covert to Real Y coordinate of the point
+                        Position_PlateX=Position_PlateX*D_P/(length(Plate_P(:,1))/2);%Covert to Real X coordinate of the point
+                        dist=sqrt((Position_PlateX-Position_pistonX)^2+(Position_PlateY-Position_pistonY)^2+L^2);%Calculate the distance between the phase plate...
+                        %and the circular piston
+                        
+                        Sum=Sum+rho*2*pi*f*uo*S_piston(k,l)*exp(-j*2*pi*f*dist/co)/(2*pi*dist);%Perform rayleigh integral on each mesh point on the piston
+                    end
+                end
+            end
+            Plate_P(i,j)=Sum;%Assign rayleigh intergral result onto each point on the phase plate
+            Count=Count+1;%Record how many partitions there are for the phase plate
+        end    
+        end
+end
+%% Part(b) Now that the rayleigh intergral has been performed on the phase plate  
+%The next step should be to define the necessary phase on each of the point on the
+%phase plate to yield a acoustics vortex beam First better to sanity check
+%the current result
 
         
