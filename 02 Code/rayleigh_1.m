@@ -2,6 +2,7 @@ clear all vars
 clc
 close all
 %% This script is meant to simulate acoustics wave from a baffled piston incident on a phase plate.
+W_bar = waitbar(0,'Please wait...');
 
 %% Part (a) define a geometry and mesh the geometry to perform Rayleigh intergral...
 % And also to define the plane from the piston to evaluate the rayleigh
@@ -13,13 +14,18 @@ uo=1;% Particle velocity on the surface of the piston in m/s assume uniform acro
 M_size=1001;% Meaning a linear line along the piston's diameter is M_size
 P_piston=zeros(M_size,M_size);%Initialize the coordinate mesh on the surface of the piston->Then fill in the position of each mesh grid
 Count=0;
+%P_piston=gpuArray(P_piston);
 for i=1:length(P_piston(:,1))%Index Y
+    tic
     for j=1:length(P_piston(1,:))%Index X
         if ((i-(length(P_piston(:,1))+1)/2)^2+(j-(length(P_piston(:,1))+1)/2)^2)<=(length(P_piston(:,1))/2)^2% Draw a circle on the square matrix
             P_piston(i,j)=1;
             Count=Count+1;
         end
     end
+    time=toc
+        waitbar_show(i,P_piston(:,1),time,W_bar)
+    
 end
 imshow(P_piston)% show an imag of the piston
 S_piston=P_piston*pi*a^2/Count; %Assigna each mesh square with an area
@@ -29,7 +35,10 @@ P_size=501;%Number of partition points along the entire line
 Plate_P=zeros(P_size,P_size);%Innitialize the pressure pattern
 Count=0;
 rho=1.2;%Density in air
+Plate_
 for i=1:length(Plate_P(:,1))%Index Y
+    tic
+    
     for j=1:length(Plate_P(1,:))%Index X
         Sum=0;
         if ((i-(length(Plate_P(:,1))+1)/2)^2+(j-(length(Plate_P(:,1))+1)/2)^2)<=(length(Plate_P(:,1))/2)^2%Draw a circle on the square matrix
@@ -54,11 +63,12 @@ for i=1:length(Plate_P(:,1))%Index Y
             Plate_P(i,j)=Sum;%Assign rayleigh intergral result onto each point on the phase plate
             Count=Count+1;%Record how many partitions there are for the phase plate
         end    
-        end
+    end
+        time=toc
+        waitbar_show(i,Plate_P(:,1),time,W_bar)
 end
 %% Part(b) Now that the rayleigh intergral has been performed on the phase plate  
 %The next step should be to define the necessary phase on each of the point on the
 %phase plate to yield a acoustics vortex beam First better to sanity check
 %the current result
-
         
