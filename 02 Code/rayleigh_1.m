@@ -11,7 +11,7 @@ f=2e5;%Frequency of Ultrasonic wave
 a=5e-2;%Radius of the circular piston
 co=343;%sound speed in air
 uo=1;% Particle velocity on the surface of the piston in m/s assume uniform across entire surface of piston
-M_size=1001;% Meaning a linear line along the piston's diameter is M_size
+M_size=71;% Meaning a linear line along the piston's diameter is M_size
 P_piston=zeros(M_size,M_size);%Initialize the coordinate mesh on the surface of the piston->Then fill in the position of each mesh grid
 Count=0;
 %P_piston=gpuArray(P_piston);
@@ -31,11 +31,11 @@ imshow(P_piston)% show an imag of the piston
 S_piston=P_piston*pi*a^2/Count; %Assigna each mesh square with an area
 D_P=10e-2;%Radius of the phase plate
 L=20e-2;%Distance between the piston and the phase plate
-P_size=501;%Number of partition points along the entire line
+P_size=71;%Number of partition points along the entire line
 Plate_P=zeros(P_size,P_size);%Innitialize the pressure pattern
 Count=0;
 rho=1.2;%Density in air
-Plate_
+
 for i=1:length(Plate_P(:,1))%Index Y
     tic
     
@@ -56,7 +56,7 @@ for i=1:length(Plate_P(:,1))%Index Y
                         dist=sqrt((Position_PlateX-Position_pistonX)^2+(Position_PlateY-Position_pistonY)^2+L^2);%Calculate the distance between the phase plate...
                         %and the circular piston
                         
-                        Sum=Sum+rho*2*pi*f*uo*S_piston(k,l)*exp(-j*2*pi*f*dist/co)/(2*pi*dist);%Perform rayleigh integral on each mesh point on the piston
+                        Sum=Sum+rho*2*pi*f*uo*S_piston(k,l)*exp(-sqrt(-1)*2*pi*f*dist/co)/(2*pi*dist);%Perform rayleigh integral on each mesh point on the piston
                     end
                 end
             end
@@ -67,8 +67,8 @@ for i=1:length(Plate_P(:,1))%Index Y
         time=toc
         waitbar_show(i,Plate_P(:,1),time,W_bar)
 end
+pcolor(angle(Plate_P))
 %% Part(b) Now that the rayleigh intergral has been performed on the phase plate  
 %The next step should be to define the necessary phase on each of the point on the
 %phase plate to yield a acoustics vortex beam First better to sanity check
 %the current result
-        
