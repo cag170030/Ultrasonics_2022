@@ -1,6 +1,12 @@
-# Ultrasonics Group Project
+e# Ultrasonics Group Project
 A place to organize project code, files, relevant papers, etc. Please remember to add any articles that you refer to in Overleaf using the \cite{} command, and be sure to add the corresponding \bibitem{}.
  
+## To do
+1. Second Rayleigh integral in MATLAB - CG
+2. Fourier acoustics code--request from Dr. Hamilton - CG & YM
+3. COMSOL model -YM
+4. Fraunhofer/Fresnel analysis - CG
+
 ## Memo and report
 in [Overleaf](https://www.overleaf.com/read/rryhckcywhks)
 
