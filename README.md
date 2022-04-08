@@ -1,4 +1,4 @@
-e# Ultrasonics Group Project
+# Ultrasonics Group Project
 A place to organize project code, files, relevant papers, etc. Please remember to add any articles that you refer to in Overleaf using the \cite{} command, and be sure to add the corresponding \bibitem{}.
  
 ## To do
