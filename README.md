@@ -3,7 +3,7 @@ A place to organize project code, files, relevant papers, etc. Please remember t
  
 ## To do
 1. Second Rayleigh integral in MATLAB - CG
-2. Fourier acoustics code--request from Dr. Hamilton - CG & YM
+2. Fourier acoustics--wait to cover in Acoustics II- CG & YM
 3. COMSOL model -YM
 4. Fraunhofer/Fresnel analysis - CG
 
