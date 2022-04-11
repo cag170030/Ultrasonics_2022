@@ -109,9 +109,10 @@ for i = 1:length(P_0(:,1))%Index Y
     tic
     for j = 1:length(P_0(1,:))%Index X
         Sum = 0;
+        if ((i-(length(P_0(:,1))+1)/2)^2+(j-(length(P_0(1,:))+1)/2)^2)<=(length(P_0(:,1))/2)^2%Draw a circle on the square matrix
             for k = 1:length(P_1(:,1))
                 for l = 1:length(P_1(1,:))
-
+                       if P_1(k,l)~=0
                         Y_1 = (length(P_1(:,1))/2)-k;%Positon in number of squares not converted to actual distance
                         X_1 = -1*((length(P_1(1,:))/2)-l);%Positon in number of squares not converted to actual distance
                         
@@ -122,13 +123,17 @@ for i = 1:length(P_0(:,1))%Index Y
                         X_1 = X_1*D_1/(length(P_1(:,1))/2);%Covert to Real X coordinate of the point
                        
                         Y_0 = Y_0*D_0/(length(P_0(:,1))/2);%Covert to Real Y coordinate of the point
-                        X_1 = X_0*D_0/(length(P_0(:,1))/2);%Covert to Real X coordinate of the point
+                        X_0 = X_0*D_0/(length(P_0(:,1))/2);%Covert to Real X coordinate of the point
                         R0 = sqrt((X_0-X_1)^2+(Y_0-Y_1)^2+(z0-z1)^2);%Distance between the phase plate and the focal plane
-                       
+                       if X_1>=0
                         phi = atan(Y_1/X_1);
+                       else
+                           phi=atan(Y_1/X_1)+pi;
+                       end
                         Sum = Sum + 1/(2*pi)* S_1(k,l)* P_1(k,l)*exp(3*sqrt(-1)*phi)*(z0-z1)/R0* (-sqrt(-1)*K/R0+1/R0^2)* exp(sqrt(-1)*K*R0);%Perform 2nd Rayleigh integral on each mesh point on the phase plate
-                   
+                       end
                 end
+            end
             end
             P_0(i,j)=Sum;%Assign rayleigh intergral result onto each point on the focal plane
             Count=Count+1;%Record how many partitions there are for the phase plate
