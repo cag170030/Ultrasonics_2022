@@ -4,10 +4,9 @@ A place to organize project code, files, relevant papers, etc. Please remember t
 [Webpage](https://cag170030.github.io/Ultrasonics_2022/) for project with links to Memo, Supplemental Notes, Term Paper.
  
 ## To do
-1. Second Rayleigh integral in MATLAB - CG
-2. Fourier acoustics--wait to cover in Acoustics II- CG & YM
-3. COMSOL model -YM
-4. Fraunhofer/Fresnel analysis - CG
+1. Incorporate curvature in first Rayleigh integral - CG
+2. Fresnel analysis - CG
+3. Fourier acoustics--wait to cover in Acoustics II- CG & YM (not essential)
 
 ## Memo and report
 in [Overleaf](https://www.overleaf.com/read/rryhckcywhks)
