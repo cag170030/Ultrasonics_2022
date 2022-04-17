@@ -35,7 +35,7 @@ for i=1:length(P_T(:,1))%Index Y
     waitbar_show(i,P_T(:,1),time,W_bar)  
 end
 %imshow(P_T)     %show an image of the transducer
-R=2*F;
+R=1*F;
 theta=asin(a/R);
 %S_T = P_T*pi*a^2/Count; %Assign each mesh square with a differential area dS_T
 S_T = P_T*4*pi*R^2*2*theta/(2*pi*Count);%Assign area->Y.M method
@@ -45,7 +45,7 @@ z0 = 100e-3;
 %size_0 = 151;      %Number of partition points along the entire line
 size_1 = 101;        %use temporarily for quick computation
 P_1 = zeros(size_1,size_1); %Initialize the pressure pattern on focal plane
-R=2*F;
+R=1*F;
 z0=F-(R-sqrt(R^2-a^2));% Define z0 Yuqi method
 z1=z0*0.75;
 for i = 1:length(P_1(:,1))%Index Y on focal plane
