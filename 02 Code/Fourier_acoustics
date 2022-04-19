@@ -8,21 +8,22 @@ f=1e6;
 a=50e-3;
 co=1500;
 k=2*pi*f/co;
-Xmax = 4;  % Ymax = Xmax; square domain assumed (-Xmax < X < Xmax)
-N = 4096;  % must be power of 2, NxN = number of FFT points
+Xmax = 20;  % Ymax = Xmax; square domain assumed (-Xmax < X < Xmax)
+N = 8192;  % must be power of 2, NxN = number of FFT points
 Zxy = 0.3;  % distance where |p(x,y)| is plotted
 KxyMax = 10; % angular spectrum plotted for |k_x*a|,|k_y*a|<KxyMax, KxyMax<(N/2)*(pi/Xmax)
 XoutXY = 2;  % max value of X displayed in plot in XY plane at Z=Zxy
 Zmax = 1.5; % end point of propagation curve
 Zpoints = 100; % number of output points in Z direction
 XoutXZ = 4;  % max value of X displayed in plot of XZ plane (same for YZ plane)
-Zo=1;
+Zo=0.1;
 x = (2*Xmax/N)*(-N/2:N/2-1); 
 y = (2*Xmax/N)*(-N/2:N/2-1); 
 [X,Y] = meshgrid(x,y);
 R=sqrt(X.^2+Y.^2); 
 %% Now seek to change the source condition
-Source =exp(sqrt(-1)*k*(sqrt(Zo^2-X.^2-Y.^2)-sqrt(Zo^2-a^2))).*(R<=a);  % uniform circular piston
+Source =100*exp(sqrt(-1)*k*(sqrt(Zo^2-X.^2-Y.^2)-sqrt(Zo^2-a^2))).*(R<=a);  % uniform circular piston
+%Source = 1.*(R<=a);  % uniform circular piston
 
 
 % for i = 1:length(Source(:,1))%Index Y on focal plane
@@ -52,9 +53,12 @@ Source =exp(sqrt(-1)*k*(sqrt(Zo^2-X.^2-Y.^2)-sqrt(Zo^2-a^2))).*(R<=a);  % unifor
 %         waitbar_show(i,Source(:,1),time,W_bar)
 % end
 
+%% Plot in 2D the field distribution before the phase plate
 
 
+Z = Zo*0.3;
 Spectrum = fft2(Source);  % angular spectrum
+
 Smax = max(max(abs(Spectrum)));  % maximum magnitude
 DeltaKxy = pi/Xmax;
 for n=1:N/2+1
@@ -67,8 +71,19 @@ K = k*a;
 Kx = repmat(Kxy,N,1);
 Ky = repmat(Kxy',1,N);
 Kz = sqrt(K^2-Kx.^2-Ky.^2);
-Z = Zo*0.3;
-P = ifft2(Spectrum.*(K./Kz).*exp(i*K*Kz*Z/2));
+
+N_points=1000;
+Z=Zo*0.5;
+% y-z plane
+K=k*a;
+for l=1:N_points
+    P = ifft2(Spectrum.*(K./Kz).*exp(sqrt(-1)*K*Kz*Z*l/(2*N_points)));
+    Ima(:,l)=P(:,N/2);
+end
+figure(5)
+%pcolor(abs(Ima));
+imagesc([0 Z],[-Xmax Xmax],abs(Ima))
+P = ifft2(Spectrum.*(K./Kz).*exp(sqrt(-1)*K*Kz*Z/2));
 %-----apply phase shift to pressure on the phase plate-----%
 l=3;
 
@@ -89,6 +104,7 @@ for i=1:length(P(:,1))
     time=toc;
     waitbar_show(i,P(:,1),time,W_bar)
 end
+
 figure(1)
 pcolor(linspace(-Xmax,Xmax,length(P(1,:))),linspace(-Xmax,Xmax,length(P(:,1))),angle(P))
 axis([-a a -a a ]);
@@ -96,7 +112,7 @@ figure(2)
 pcolor(linspace(-Xmax,Xmax,length(P(1,:))),linspace(-Xmax,Xmax,length(P(:,1))),abs(P))
 axis([-a a -a a ]);
 %---------The second rayleigh intergral to map to focus------------%
-Z=Zo*0.7;
+Z=Zo*0.5;
 P=fillmissing(P,'nearest');
 Spectrum1=fft2(P);
 Spectrum1=fillmissing(Spectrum1.*exp(sqrt(-1)*Kz*Z),'linear');
@@ -104,9 +120,22 @@ Spectrum1(isinf(Spectrum1))=min(min(Spectrum1));
 Spectrum1(isnan(Spectrum1))=min(min(Spectrum1));
 %Spectrum1=fillmissing(Spectrum1,'linear');
 P_0=ifft2((Spectrum1));
+for l=1:N_points
+    P=fillmissing(P,'nearest');
+    Spectrum1=fft2(P);
+    Spectrum1=fillmissing(Spectrum1.*exp(sqrt(-1)*Kz*Z),'linear');
+    Spectrum1(isinf(Spectrum1))=min(min(Spectrum1));
+    Spectrum1(isnan(Spectrum1))=min(min(Spectrum1));
+    P_I=ifft2((Spectrum1));
+    Ima_0(:,l)=P_I(:,N/2);
+end
+figure(6)
+%pcolor(abs(Ima_0));
+imagesc(abs(Ima_0))
+    
 figure(3)
 pcolor(linspace(-Xmax,Xmax,length(P_0(1,:))),linspace(-Xmax,Xmax,length(P_0(:,1))),angle(P_0))
-axis([-0.1 0.1 -0.1 0.1 ]);
+axis([-0.05 0.05 -0.05 0.05 ]);
 figure(4)
 pcolor(linspace(-Xmax,Xmax,length(P_0(1,:))),linspace(-Xmax,Xmax,length(P_0(:,1))),abs(P_0))
 axis([-0.1 0.1 -0.1 0.1 ]);
