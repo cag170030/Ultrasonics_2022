@@ -5,10 +5,10 @@ clc
 close all force
 W_bar = waitbar(0,'Please wait...');
 f=1e6;
-a=50e-3;
+a=500e-3;
 co=1500;
 k=2*pi*f/co;
-Xmax = 100*a;  % Ymax = Xmax; square domain assumed (-Xmax < X < Xmax)
+Xmax = 1;  % Ymax = Xmax; square domain assumed (-Xmax < X < Xmax)
 N = 2048;  % must be power of 2, NxN = number of FFT points
 Zxy = 0.3;  % distance where |p(x,y)| is plotted
 KxyMax = 10; % angular spectrum plotted for |k_x*a|,|k_y*a|<KxyMax, KxyMax<(N/2)*(pi/Xmax)
@@ -106,7 +106,7 @@ Angle_simp(1:(length(P(:,1))/2),1:(length(P(1,:))/2))=atan(Y_simp(1:(length(P(:,
 Angle_simp((length(P(:,1))/2+1):length(P(:,1)),1:(length(P(1,:))/2))=atan(Y_simp((length(P(:,1))/2+1):length(P(:,1)),1:(length(P(1,:))/2))./...
     X_simp((length(P(:,1))/2+1):length(P(:,1)),1:(length(P(1,:))/2)))+pi;
  Angle_simp=2*pi*l*Angle_simp/(2*pi);
-P=P.*exp(sqrt(-1)*Angle_simp);
+P=P.*exp(sqrt(-1),*Angle_simp,*Angle);
 % for i=1:Y_P
 %     tic
 %     
