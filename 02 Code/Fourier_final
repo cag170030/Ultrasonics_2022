@@ -1,0 +1,220 @@
+%% Fourier acoustics approach to the Project
+%------------pressure field propogate from the piston to the phase plate--%
+clear all vars
+clc 
+close all force
+W_bar = waitbar(0,'Please wait...');
+f=1.092e6; 
+a1=50e-3;
+%co=343;
+co=1481;  
+k=2*pi*f/co;
+Xmax = 40*a1;  % Ymax = Xmax; square domain assumed (-Xmax < X < Xmax)
+N = 16384;  % must be power of 2, NxN = number of FFT points
+Zxy = 0.3;  % distance where |p(x,y)| is plotted
+KxyMax = 10; % angular spectrum plotted for |k_x*a|,|k_y*a|<KxyMax, KxyMax<(N/2)*(pi/Xmax)
+XoutXY = 2;  % max value of X displayed in plot in XY plane at Z=Zxy
+Zmax = 1.5; % end point of propagation curve
+Zpoints = 100; % number of output points in Z direction
+XoutXZ = 4;  % max value of X displayed in plot of XZ plane (same for YZ plane)
+Zo=1e-2;
+x = (2*Xmax/N)*(-N/2:N/2-1); 
+y = (2*Xmax/N)*(-N/2:N/2-1); 
+[X,Y] = meshgrid(x,y);
+R=sqrt(X.^2+(Y).^2); 
+%% Now seek to change the source condition
+%Source =100*(sqrt(Zo^2-X.^2-Y.^2)/Zo).*exp(sqrt(-1)*k*(sqrt(Zo^2-X.^2-Y.^2)-sqrt(Zo^2-a1^2))).*(R<=a1);  % uniform circular piston
+%Source = 1.*(R<=a)+1.*(sqrt(X.^2+(Y-3*a*2).^2)<=a)+1.*(sqrt(X.^2+(Y-3*a*1).^2)<=a)+1.*(sqrt(X.^2+(Y-0).^2)<=a)+1.*(sqrt(X.^2+(Y+3*a*1).^2)<=a)+1.*(sqrt(X.^2+(Y+3*a*2).^2)<=a);  % uniform circular piston
+Source = 1.*(R<=a1);
+
+% for i = 1:length(Source(:,1))%Index Y on focal plane
+%     tic
+% for j = 1:length(Source(1,:))%Index X on focal plane
+%         Sum = 0;
+%                 
+%                     %if P_T(k,l) ~= 0
+%                         Y_T = (length(Source(:,1))/2)-i;%Positon in number of squares not converted to actual distance
+%                         X_T = -1*((length(Source(1,:))/2)-j);%Positon in number of squares not converted to actual distance
+%                         
+%                         %Y_1 = (length(P_1(:,1))/2)-i;%Positon in number of squares not converted to actual distance
+%                         %X_1 = -1*((length(P_1(1,:))/2)-j);%Positon in number of squares not converted to actual distance
+%           
+%                         Y_T = Y_T*a/(length(Source(:,1))/2);%Covert to Real Y coordinate of the point
+%                         X_T = X_T*a/(length(Source(1,:))/2);%Covert to Real X coordinate of the point
+%                         %Z_T = 0.5*(2*F - sqrt(4*F^2 - 4*(X_T^2+Y_T^2))); %see supplemental notes for derivation of this geometry
+%                         Z_T = (sqrt(Zo^2-X_T^2-Y_T^2)-sqrt(Zo^2-a^2)); %
+%                         %Define Tranducer position Y M method
+%                         Source(i,j)=Source(i,j)*exp(sqrt(-1)*k*Z_T);
+% 
+%                        
+%                 
+%        
+% end    
+%         time=toc
+%         waitbar_show(i,Source(:,1),time,W_bar)
+% end
+
+%% Plot in 2D the field distribution before the phase plate
+
+
+
+Spectrum = fft2(Source);  % angular spectrum
+
+Smax = max(max(abs(Spectrum)));  % maximum magnitude
+DeltaKxy = pi/Xmax;
+for n=1:N/2+1
+    Kxy(n)=(n-1)*DeltaKxy;
+end
+for n=N/2+2:N
+    Kxy(n)=-(N+1-n)*DeltaKxy;
+end
+K = k*a1;
+Kx = repmat(Kxy,N,1);
+Ky = repmat(Kxy',1,N);
+Kz = sqrt(K^2-Kx.^2-Ky.^2);
+
+N_points=800;
+
+% y-z plane
+K=k*a1;
+%Spectrum=gpuArray(Spectrum);
+Z=0.75*Zo;
+for l=1:N_points
+    tic
+    
+    P = ifft2(Spectrum.*(K./Kz).*exp(sqrt(-1)*Kz*Z*l/(N_points)));
+    P=P;
+    Ima(:,l)=P(:,N/2);
+    toc
+end
+figure(5)
+%pcolor(abs(Ima));
+imagesc([0 Z],[-Xmax Xmax],abs(Ima))
+title('Y-Z plane before it propogate to phase plate');
+xlabel('Z [m]');
+ylabel('Y [m]');
+colorbar
+colormap('jet')
+%axis square
+%pedit;
+Z=0.75*Zo;
+P = ifft2(Spectrum.*(K./Kz).*exp(sqrt(-1)*Kz*Z));
+%-----apply phase shift to pressure on the phase plate-----%
+l=3;
+X_P=length(P(1,:));
+Y_P=length(P(:,1));
+Angle=1.*(R<=1.5*a1);
+y_simp = (2*Xmax/N)*(N/2:-1:-N/2+1); 
+x_simp = (2*Xmax/N)*(-N/2:N/2-1); 
+[X_simp,Y_simp] = meshgrid(x,y);
+Angle_simp=zeros(length(P(:,1)),length(P(1,:)));
+Angle_simp(1:(length(P(:,1))/2),(length(P(1,:))/2+1):length(P(1,:)))=atan(Y_simp(1:(length(P(:,1))/2),(length(P(1,:))/2+1):length(P(1,:)))./X_simp(1:(length(P(:,1))/2),(length(P(1,:))/2+1):length(P(1,:))));
+Angle_simp((length(P(:,1))/2+1):length(P(:,1)),(length(P(1,:))/2):length(P(1,:)))=atan(Y_simp((length(P(:,1))/2+1):length(P(:,1)),(length(P(1,:))/2):length(P(1,:)))./...
+    X_simp((length(P(:,1))/2+1):length(P(:,1)),(length(P(1,:))/2):length(P(1,:))))+2*pi;
+Angle_simp(1:(length(P(:,1))/2),1:(length(P(1,:))/2))=atan(Y_simp(1:(length(P(:,1))/2),1:(length(P(1,:))/2))./...
+    X_simp(1:(length(P(:,1))/2),1:(length(P(1,:))/2)))+pi;
+Angle_simp((length(P(:,1))/2+1):length(P(:,1)),1:(length(P(1,:))/2))=atan(Y_simp((length(P(:,1))/2+1):length(P(:,1)),1:(length(P(1,:))/2))./...
+    X_simp((length(P(:,1))/2+1):length(P(:,1)),1:(length(P(1,:))/2)))+pi;
+ Angle_simp=2*pi*l*Angle_simp/(2*pi);
+P=P.*exp(sqrt(-1).*Angle_simp.*Angle);
+% for i=1:Y_P
+%     tic
+%     
+%     for j=1:X_P
+%         X_Index=j-length(P(1,:))/2;
+%         Y_Index=length(P(:,1))/2-j;
+%         if X_Index>=0
+%                phi = atan(Y_Index/X_Index);
+%             else
+%                phi=atan(Y_Index/X_Index)+pi;
+%         end
+%         Angle1=2*pi*l*phi/(2*pi);
+%             Angle(i,j)=exp(sqrt(-1)*Angle1);
+%     end
+%     time=toc;
+%     waitbar_show(i,P(:,1),time,W_bar)
+% end
+%P=P.*Angle;
+
+figure(1)
+%pcolor(linspace(-Xmax,Xmax,length(P(1,:))),linspace(-Xmax,Xmax,length(P(:,1))),angle(P))
+imagesc([-Xmax Xmax],[-Xmax Xmax],angle(P));
+%axis([-a a -a a ]);
+axis([-2*a1 2*a1 -2*a1 2*a1]);
+xlabel('X [m]');
+ylabel('Y [m]');
+title('Pressure amplitude after phase plate');
+axis square
+colorbar
+colormap('jet')
+figure(2)
+%pcolor(linspace(-Xmax,Xmax,length(P(1,:))),linspace(-Xmax,Xmax,length(P(:,1))),abs(P))
+imagesc([-Xmax Xmax],[-Xmax Xmax],abs(P));
+%axis([-a a -a a ]);
+axis([-2*a1 2*a1 -2*a1 2*a1]);
+%---------The second rayleigh intergral to map to focus------------%
+xlabel('X [m]');
+ylabel('Y [m]');
+title('Pressure Phase just after phase plate');
+axis square
+colorbar
+colormap('jet')
+
+Z=Zo*0.25;
+%P=gather(P);
+P=fillmissing(P,'next');
+
+Spectrum1=fft2(P);
+Spectrum1=fillmissing(Spectrum1,'linear');
+Spectrum1(isinf(Spectrum1))=min(min(Spectrum1));
+Spectrum1(isnan(Spectrum1))=min(min(Spectrum1));
+%Spectrum1=fillmissing(Spectrum1,'linear');
+P_0=ifft2((Spectrum1.*exp(sqrt(-1)*Kz*Z)));
+Z=Zo*0.5;
+for l=1:N_points
+    %P=fillmissing(P,'nearest');
+    %Spectrum1=fft2(P);
+    %Spectrum1=fillmissing(Spectrum1.*exp(sqrt(-1)*Kz*Z),'linear');
+    Spectrum1(isinf(Spectrum1))=min(min(Spectrum1));
+    Spectrum1(isnan(Spectrum1))=min(min(Spectrum1));
+    
+    P_I=ifft2(Spectrum1.*exp(sqrt(-1)*Kz*Z*l/(N_points)));
+    P_I=P_I;
+    Ima_0(:,l)=P_I(:,N/2);
+end
+figure(6)
+%pcolor(abs(Ima_0));
+%Ima=Ima/(max(max(Ima)));
+%Ima_0=Ima_0/(max(max(Ima_0)));
+ImF=abs([Ima,Ima_0]);
+ImF=ImF/(max(max(ImF)));
+imagesc([0 Zo*1.25],[-Xmax,Xmax],ImF)
+title('Full field after the phase plate Y-Z plane');
+%pedit
+xlabel('Z [m]');
+ylabel('Y [m]');
+colorbar
+colormap('jet')
+
+    
+figure(3)
+%pcolor(linspace(-Xmax,Xmax,length(P_0(1,:))),linspace(-Xmax,Xmax,length(P_0(:,1))),angle(P_0))
+imagesc([-Xmax Xmax],[-Xmax Xmax],angle(P_0));
+%axis([-0.05 0.05 -0.05 0.05 ]);
+axis([-2*a1 2*a1 -2*a1 2*a1]);
+xlabel('X [m]');
+ylabel('Y [m]');
+title('Pressure Phase left phase plate');
+axis square
+colorbar
+colormap('jet')
+figure(4)
+%pcolor(linspace(-Xmax,Xmax,length(P_0(1,:))),linspace(-Xmax,Xmax,length(P_0(:,1))),abs(P_0))
+imagesc([-Xmax Xmax],[-Xmax Xmax],abs(P_0));
+xlabel('X [m]');
+ylabel('Y [m]');
+title('Pressure amplitude left phase plate');
+axis square
+colorbar
+colormap('jet')
+axis([-2*a1 2*a1 -2*a1 2*a1]);
