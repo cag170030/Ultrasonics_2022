@@ -4,15 +4,15 @@ A place to organize project code, files, relevant papers, etc. Please remember t
 [Webpage](https://cag170030.github.io/Ultrasonics_2022/) for project with links to Memo, Supplemental Notes, Term Paper.
  
 ## To do
-1. Incorporate curvature in first Rayleigh integral - CG
-2. Fresnel analysis - CG
-3. Fourier acoustics--wait to cover in Acoustics II- CG & YM (not essential)
+1. Fresnel analysis - CG
+2. Finish paper 
+3. Finish slides
 
 ## Memo and report
 in [Overleaf](https://www.overleaf.com/read/rryhckcywhks)
 
 ## Presentation
-also in Overleaf--will create this in early May
+in [Overleaf](https://www.overleaf.com/read/kqznyfsmbbtv)
  
 ## References
 
